@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useReducedMotion, Variants } from 'framer-motion';
+import { motion, useReducedMotion, Variants, AnimatePresence } from 'framer-motion';
 import { Notice } from '@/types';
 import { formatDate } from '@/lib/utils';
 import { useState } from 'react';
@@ -43,58 +43,6 @@ export default function BoardCard({ notice, index }: BoardCardProps) {
           transition: { delay: 0.3 + index * 0.07, duration: 0.5, type: 'spring' as const, bounce: 0.4 }
         }
       };
-
-  const MobileExpandedView = () => {
-    if (!isExpanded) return null;
-    return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center sm:hidden bg-black/60 backdrop-blur-sm" onClick={() => setIsExpanded(false)}>
-        <motion.div 
-          initial={{ y: '100%' }}
-          animate={{ y: 0 }}
-          exit={{ y: '100%' }}
-          transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-          className="w-full bg-surface rounded-t-2xl p-6 relative"
-          style={{ backgroundColor: styles.paper }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button onClick={() => setIsExpanded(false)} className="absolute right-4 top-4 p-2 text-[#1A1A2A]/50 hover:text-[#1A1A2A]">
-             <X size={20} />
-          </button>
-          
-          <div className="font-mono text-[10px] font-bold tracking-wider mb-3" style={{ color: styles.pin }}>
-            {styles.label}
-          </div>
-          
-          <h3 className="font-display font-medium text-xl text-[#1A1A2A] leading-tight mb-2">
-            {notice.title}
-          </h3>
-          
-          <div className="font-mono text-xs text-[#1A1A2A]/60 mb-4">
-            {formatDate(notice.date)}
-          </div>
-          
-          {notice.description && (
-            <p className="font-sans text-sm text-[#1A1A2A]/80 leading-relaxed mb-6 whitespace-pre-wrap">
-              {notice.description}
-            </p>
-          )}
-          
-          <div className="flex gap-2 flex-wrap">
-             {notice.app_name && (
-                <span className="inline-block px-3 py-1 bg-black/5 rounded-full text-xs font-medium text-[#1A1A2A]">
-                  {notice.app_name}
-                </span>
-             )}
-             {notice.version && (
-                <span className="inline-block px-3 py-1 bg-black/5 rounded-full font-mono text-xs text-[#1A1A2A]">
-                  v{notice.version}
-                </span>
-             )}
-          </div>
-        </motion.div>
-      </div>
-    );
-  };
 
   return (
     <>
@@ -183,7 +131,57 @@ export default function BoardCard({ notice, index }: BoardCardProps) {
         </div>
       </div>
     </motion.div>
-    <MobileExpandedView />
+    
+    <AnimatePresence>
+      {isExpanded && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center sm:hidden bg-black/60 backdrop-blur-sm" onClick={() => setIsExpanded(false)}>
+          <motion.div 
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+            className="w-full bg-surface rounded-t-2xl p-6 relative"
+            style={{ backgroundColor: styles.paper }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button onClick={() => setIsExpanded(false)} className="absolute right-4 top-4 p-2 text-[#1A1A2A]/50 hover:text-[#1A1A2A]">
+               <X size={20} />
+            </button>
+            
+            <div className="font-mono text-[10px] font-bold tracking-wider mb-3" style={{ color: styles.pin }}>
+              {styles.label}
+            </div>
+            
+            <h3 className="font-display font-medium text-xl text-[#1A1A2A] leading-tight mb-2">
+              {notice.title}
+            </h3>
+            
+            <div className="font-mono text-xs text-[#1A1A2A]/60 mb-4">
+              {formatDate(notice.date)}
+            </div>
+            
+            {notice.description && (
+              <p className="font-sans text-sm text-[#1A1A2A]/80 leading-relaxed mb-6 whitespace-pre-wrap">
+                {notice.description}
+              </p>
+            )}
+            
+            <div className="flex gap-2 flex-wrap">
+               {notice.app_name && (
+                  <span className="inline-block px-3 py-1 bg-black/5 rounded-full text-xs font-medium text-[#1A1A2A]">
+                    {notice.app_name}
+                  </span>
+               )}
+               {notice.version && (
+                  <span className="inline-block px-3 py-1 bg-black/5 rounded-full font-mono text-xs text-[#1A1A2A]">
+                    v{notice.version}
+                  </span>
+               )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
     </>
   );
 }
